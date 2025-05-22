@@ -73,6 +73,16 @@ p {
   flex-wrap: wrap;
 }
 
+.screenshot-card h3 {
+  font-size: 1.1rem;
+  margin-top: 12px;
+}
+
+.screenshot-card p {
+  font-size: 0.95rem;
+  color: #444;
+  margin-top: 4px;
+}
 .screenshot-card img {
   width: 100%;
   height: auto;
