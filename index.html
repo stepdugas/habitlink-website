@@ -1,47 +1,561 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>HabitLink</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HabitLink — Build Habits That Stick</title>
+  <meta name="description" content="HabitLink is an iOS habit tracker with streaks, progress rings, heatmaps, and a beautiful home screen widget." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal-mid: #0d3d3d;
+      --mint: #3dd9b3;
+      --white: #ffffff;
+      --white-70: rgba(255,255,255,0.7);
+      --white-30: rgba(255,255,255,0.3);
+      --white-10: rgba(255,255,255,0.08);
+      --black: #060f0f;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 48px;
+      background: rgba(6,15,15,0.8);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--white-10);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--mint);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--mint);
+      color: var(--black);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px 22px;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .nav-cta:hover { background: #5aebc8; transform: translateY(-1px); }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 140px 24px 100px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: 10%; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(61,217,179,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(61,217,179,0.1);
+      border: 1px solid rgba(61,217,179,0.3);
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--mint);
+      margin-bottom: 32px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      animation: fadeDown 0.8s ease both;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3rem, 8vw, 6rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      margin-bottom: 24px;
+      animation: fadeDown 0.8s ease 0.1s both;
+    }
+
+    .hero h1 em { font-style: normal; color: var(--mint); }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--white-70);
+      max-width: 480px;
+      line-height: 1.75;
+      margin-bottom: 44px;
+      animation: fadeDown 0.8s ease 0.2s both;
+    }
+
+    .hero-cta { animation: fadeDown 0.8s ease 0.3s both; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--mint);
+      color: var(--black);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 18px 36px;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: all 0.25s;
+      box-shadow: 0 0 60px rgba(61,217,179,0.25);
+    }
+    .btn-primary:hover {
+      background: #5aebc8;
+      transform: translateY(-3px);
+      box-shadow: 0 0 80px rgba(61,217,179,0.4);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 40px; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--white-30);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: fadeDown 1s ease 0.8s both;
+    }
+
+    .scroll-hint-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--white-30), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    .showcase { position: relative; }
+
+    .showcase-sticky-wrapper {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .showcase-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 80px;
+      width: 100%;
+      max-width: 1100px;
+      padding: 0 48px;
+    }
+
+    .showcase-text {
+      flex: 1;
+      max-width: 420px;
+      pointer-events: auto;
+      position: relative;
+      min-height: 280px;
+    }
+
+    .showcase-step {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      pointer-events: none;
+    }
+
+    .showcase-step.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      position: relative;
+    }
+
+    .step-number {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--mint);
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-number::before {
+      content: '';
+      display: inline-block;
+      width: 24px; height: 1px;
+      background: var(--mint);
+    }
+
+    .showcase-step h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .showcase-step p {
+      font-size: 1rem;
+      color: var(--white-70);
+      line-height: 1.75;
+    }
+
+    .step-dots {
+      display: flex;
+      gap: 8px;
+      margin-top: 32px;
+    }
+
+    .step-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--white-30);
+      transition: all 0.3s ease;
+    }
+
+    .step-dot.active {
+      background: var(--mint);
+      width: 24px;
+      border-radius: 3px;
+    }
+
+    .phone-wrapper { flex: 0 0 auto; width: 280px; }
+
+    .phone-frame {
+      position: relative;
+      width: 280px;
+      border-radius: 44px;
+      background: #111;
+      box-shadow:
+        0 0 0 2px #2a2a2a,
+        0 40px 120px rgba(0,0,0,0.8),
+        0 0 80px rgba(61,217,179,0.06);
+      overflow: hidden;
+      aspect-ratio: 9/19.5;
+    }
+
+    .phone-screen {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .phone-screen.active { opacity: 1; }
+
+    .phone-screen img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 10px; left: 50%;
+      transform: translateX(-50%);
+      width: 90px; height: 26px;
+      background: #111;
+      border-radius: 0 0 18px 18px;
+      z-index: 10;
+    }
+
+    .scroll-sections { position: relative; z-index: 1; }
+    .scroll-section { height: 100vh; }
+
+    .features {
+      padding: 120px 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-eyebrow {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--mint);
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      text-align: center;
+      margin-bottom: 60px;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .feature-card {
+      background: var(--teal-mid);
+      border: 1px solid var(--white-10);
+      border-radius: 20px;
+      padding: 28px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+    }
+
+    .feature-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .feature-card:nth-child(2).visible { transition-delay: 0.07s; }
+    .feature-card:nth-child(3).visible { transition-delay: 0.14s; }
+    .feature-card:nth-child(4).visible { transition-delay: 0.21s; }
+    .feature-card:nth-child(5).visible { transition-delay: 0.28s; }
+    .feature-card:nth-child(6).visible { transition-delay: 0.35s; }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(61,217,179,0.25);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .feature-icon { font-size: 2rem; margin-bottom: 14px; display: block; }
+
+    .feature-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 0.88rem;
+      color: var(--white-70);
+      line-height: 1.65;
+    }
+
+    .themes-section {
+      padding: 80px 24px;
+      text-align: center;
+    }
+
+    .themes-grid {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 40px;
+    }
+
+    .theme-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--white-10);
+      border: 1px solid var(--white-10);
+      border-radius: 100px;
+      padding: 12px 22px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .theme-pill:hover { border-color: var(--white-30); transform: translateY(-2px); }
+    .theme-dot { width: 12px; height: 12px; border-radius: 50%; }
+
+    .cta-section {
+      padding: 120px 24px;
+      text-align: center;
+      position: relative;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse, rgba(61,217,179,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-section h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      margin-bottom: 20px;
+    }
+
+    .cta-section h2 em { font-style: normal; color: var(--mint); }
+
+    .cta-section p {
+      color: var(--white-70);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 440px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    footer {
+      border-top: 1px solid var(--white-10);
+      padding: 28px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      color: var(--mint);
+      font-size: 1rem;
+    }
+
+    .footer-links { display: flex; gap: 24px; }
+
+    .footer-links a {
+      color: var(--white-70);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--white); }
+
+    .footer-copy {
+      color: var(--white-30);
+      font-size: 0.78rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; }
+      50%       { opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .showcase-sticky-wrapper { display: none; }
+      .scroll-sections { display: none; }
+      .mobile-screenshots { display: flex !important; }
+      footer { flex-direction: column; align-items: center; text-align: center; padding: 24px; }
+      .footer-links { justify-content: center; }
+    }
+
+    .mobile-screenshots {
+      display: none;
+      flex-direction: column;
+      gap: 56px;
+      padding: 60px 24px;
+    }
+
+    .mobile-shot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .mobile-shot img {
+      width: 200px;
+      border-radius: 28px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    }
+
+    .mobile-shot h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+    }
+
+    .mobile-shot p {
+      color: var(--white-70);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      max-width: 300px;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>HabitLink</h1>
-        <p>Track habits daily with ease.</p>
-        <a class="button" href="#">Download on the App Store</a>
-    </header>
 
-    <section class="screenshots">
-    <h2 class="section-heading">Screenshots</h2>
-    <div class="screenshot-wrapper">
-        <div class="screenshot-card">
-            <img src="habit-screen.png" alt="Main screen showing a list of tracked habits">
-            <h3>Track your daily habits</h3>
-            <p>Quickly check off completed habits and monitor your progress at a glance.</p>
-        </div>
-        <div class="screenshot-card">
-            <img src="add-habit-screen.png" alt="Screen to create and customize a new habit">
-            <h3>Track daily or weekly goals</h3>
-            <p>Choose frequency and set custom goals for each habit.</p>
-        </div>
-        <div class="screenshot-card">
-            <img src="settings-screen.png" alt="Settings panel with reminder toggles and app preferences">
-            <h3>Never miss a habit</h3>
-            <p>Enable daily reminders, auto-reset, and other preferences.</p>
-        </div>
-    </div>
-</section>
+  <nav>
+    <div class="nav-logo">HabitLink</div>
+    <a href="https://apps.apple.com/us/app/habitlink/id6746264129" class="nav-cta" target="_blank">Download Now</a>
+  </nav>
 
-    <section class="support">
-        <h2>Need Help?</h2>
-        <p><a href="mailto:support@usehabitlink.com">Contact Support</a></p>
-    </section>
-
-    <footer>
-        <p><a href="privacy-policy.html">Privacy Policy</a></p>
-        <p>&copy; 2025 Stephanie Dugas</p>
-    </footer>
-</body>
-</html>
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-badge">✦ Available on the App Store</div>
+    <h1>Build habits<br/><em>that stick.</em></h1>
+    <p class="hero-sub">Track daily and weekly habits, maintain streaks, and watch your consistency grow — one day at a time.</p>
+    <div class="hero-cta">
+      <a href="https://apps.apple.com/us/app/habitlink/id6746264129" class="btn-primary" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.2
